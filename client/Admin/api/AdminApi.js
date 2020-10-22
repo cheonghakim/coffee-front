@@ -16,9 +16,8 @@ export class AdminApi {
         "http://192.168.1.131:8080/hiddenc/login/main"
       );
     } catch (e) {
-      console.log("error:" + e);
+      console.log("error: " + e);
     }
-
     return result;
   }
 
@@ -105,13 +104,13 @@ export class AdminApi {
     return result;
   }
 
-  async search(adminData) {
+  async search(cafeData) {
     console.log("ajax-search");
     let result;
     try {
       result = await this.ajax.sendAjaxPostFile(
         "http://192.168.1.131:8080/hiddenc/login/search/result",
-        adminData
+        cafeData
       );
     } catch (e) {
       console.log("error:" + e);

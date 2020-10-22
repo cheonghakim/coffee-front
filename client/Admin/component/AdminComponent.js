@@ -1,4 +1,4 @@
-import { AdminView } from "./AdminView.js";
+import { AdminView } from "../view/AdminView.js";
 import { CommonView } from "../../Common/view/CommonView.js";
 import { UserView } from "../../User/view/UserView.js";
 
@@ -26,8 +26,6 @@ export class AdminComponent {
     this.search_btn = document.getElementsByClassName("js-search-btn")[0];
 
     // tag
-    // this.header_menu = document.querySelectorAll(".js-admin-header-menu")[1];
-    // this.admin_menu = document.querySelectorAll(".js-admin-header-menu")[0];
     this.revisecafe_list = document.getElementsByClassName(
       "js-admin-js-admin-revisecafe-list"
     );
@@ -38,6 +36,13 @@ export class AdminComponent {
     this.half_map = document.getElementById("js-map-half");
     this.search_list = document.getElementsByClassName("js-search-result-list");
 
+    //event delegation
+    this.r_header = document.getElementsByClassName("js-admin-header-menu")[0];
+    this.header = document.getElementsByClassName("js-admin-header-menu")[1];
+    this.admin_menu = document.getElementsByClassName("js-admin-menu")[0];
+    this.caffeine_list = document.getElementsByClassName("js-caffeine-list")[0];
+    this.cafe_list = document.getElementsByClassName("js-cafe-list")[0];
+
     // image preview
     this.thumnail = document.getElementById("js-thumnail");
     this.upload_cafe = document.getElementById("js-upload");
@@ -45,77 +50,316 @@ export class AdminComponent {
 
   // Listener
 
-  addCafe(callback) {
-    console.log("add-cafe-listener");
-    document
-      .getElementsByClassName("js-admin-addcafe-btn")[0]
-      .addEventListener("click", callback);
+  // addCafe(callback) {
+  //   console.log("add-cafe-listener");
+  //   document
+  //     .getElementsByClassName("js-admin-addcafe-btn")[0]
+  //     .addEventListener("click", callback);
+  // }
+
+  // reviseCafe(callback) {
+  //   console.log("revise-cafe-listener");
+
+  //   document
+  //     .getElementsByClassName("js-admin-revisecafe-btn")[0]
+  //     .addEventListener("click", callback);
+  // }
+
+  // loadCafeList(callback) {
+  //   console.log("load list of cafe listner");
+
+  //   document
+  //     .getElementsByClassName("js-admin-revisecafe-load-btn")[0]
+  //     .addEventListener("click", callback);
+  // }
+
+  // search(callback) {
+  //   console.log("search-listener");
+
+  //   document
+  //     .getElementsByClassName("js-search-btn")[0]
+  //     .addEventListener("click", callback);
+  // }
+
+  addCafe(callback, self) {
+    if (this.addcafe_btn !== undefined) {
+      this.addcafe_btn.addEventListener("click", (e) => {
+        e.preventDefault();
+
+        let cafeData = new FormData(this.addcafe_btn);
+
+        for (let value of cafeData.values()) {
+          console.log("value: " + value);
+        }
+        if (typeof callback === "string") {
+          callback = self[callback];
+        } else if (typeof callback === "function") {
+          callback.call(self);
+        }
+
+        if (callback) {
+          callback(cafeData);
+        }
+      });
+    }
   }
 
-  reviseCafe(callback) {
-    console.log("revise-cafe-listener");
+  reviseCafe(callback, self) {
+    if (this.revisecafe_update_btn !== undefined) {
+      this.revisecafe_update_btn.addEventListener("click", (e) => {
+        e.preventDefault();
 
-    document
-      .getElementsByClassName("js-admin-revisecafe-btn")[0]
-      .addEventListener("click", callback);
+        let cafeData = new FormData(this.revisecafe_form);
+
+        for (let value of cafeData.values()) {
+          console.log("value: " + value);
+        }
+        if (typeof callback === "string") {
+          callback = self[callback];
+        } else if (typeof callback === "function") {
+          callback.call(self);
+        }
+
+        if (callback) {
+          callback(cafeData);
+        }
+      });
+    }
   }
 
-  loadCafeList(callback) {
-    console.log("load list of cafe listner");
+  search(callback, self) {
+    if (this.search_btn !== undefined) {
+      this.search_btn.addEventListener("click", (e) => {
+        e.preventDefault();
 
-    document
-      .getElementsByClassName("js-admin-revisecafe-load-btn")[0]
-      .addEventListener("click", callback);
+        let cafeData = new FormData(this.search_form);
+
+        for (let value of cafeData.values()) {
+          console.log("value:" + value);
+        }
+
+        if (typeof callback === "string") {
+          callback = self[callback];
+        } else if (typeof callback === "function ") {
+          callback.call(self);
+        }
+
+        if (callback) {
+          callback(cafeData);
+        }
+      });
+    }
   }
 
-  search(callback) {
-    console.log("search-listener");
-
-    document
-      .getElementsByClassName("js-search-btn")[0]
-      .addEventListener("click", callback);
-  }
-
-  // event delegation
-  headerMenu(callback) {
-    console.log("header_menu-delegation");
-
-    let r_header = document.getElementsByClassName("js-admin-header-menu")[0];
-    let header = document.getElementsByClassName("js-admin-header-menu")[1];
-
-    r_header.addEventListener("click", callback);
-    header.addEventListener("click", callback);
-  }
-
-  adminMenu(callback) {
-    console.log("admin_menu-delegation");
-
-    let admin_menu = document.getElementsByClassName("js-admin-menu")[0];
-    admin_menu.addEventListener("click", callback);
-  }
-
-  caffeineList(callback) {
+  caffeineList(callback, self) {
     console.log("caffeine-list");
+    if (this.caffeine_list !== undefined) {
+      this.caffeine_list.addEventListener("click", (e) => {
+        e.preventDefault();
 
-    let caffeine_list = document.getElementsByClassName("js-caffeine-list")[0];
-    caffeine_list.addEventListener("click", callback);
+        //callback bind
+        if (typeof callback === "string") {
+          callback = self[callback];
+        } else if (typeof callback === "function") {
+          callback.call(self);
+        }
+
+        //event delegation
+        if (e.target.tagName === "H3" || e.target.tagName === "A") {
+          let str = String(e.target.innerHTML);
+          let pattern = /(?!value=")\d{0,99999}(?<!\")/;
+          let found = str.match(pattern);
+
+          let clear_arr = found.filter(function (item) {
+            return item !== null && item !== undefined && item !== "";
+          });
+          let user_id = clear_arr.join();
+
+          if (callback) {
+            callback(user_id);
+          }
+        }
+      });
+    }
   }
 
-  cafeList(callback) {
+  cafeList(callback, self) {
     console.log("cafe-list");
+    if (this.cafe_list !== undefined) {
+      this.cafe_list.addEventListener("click", (e) => {
+        e.preventDefault();
 
-    let cafe_list = document.getElementsByClassName("js-cafe-list")[0];
-    cafe_list.addEventListener("click", callback);
+        //callback bind
+        if (typeof callback === "string") {
+          callback = self[callback];
+        } else if (typeof callback === "function") {
+          callback.call(self);
+        }
+
+        if (e.target.tagName === "H3" || e.target.tagName === "A") {
+          let str = String(e.target.innerHTML);
+          let pattern = /(?!value=")\d{0,99999}(?<!\")/g;
+          let found = str.match(pattern);
+
+          let clear_arr = found.filter(function (item) {
+            return item !== null && item !== undefined && item !== "";
+          });
+          let cafe_id = clear_arr.join();
+
+          if (callback) {
+            callback(cafe_id);
+          }
+        }
+      });
+    }
+  }
+  headerMenu(callback, self) {
+    // responsive header
+    console.log("header-delegation");
+    if (this.r_header !== undefined) {
+      this.r_header.addEventListener("click", async (e) => {
+        e.preventDefault();
+        console.log("headermenu-this")
+        let clicked;
+
+        // callback
+        if (typeof callback === "string") {
+          callback = self[callback];
+        } else if (typeof callback === "function ") {
+          callback.call(self);
+        }
+
+        if (
+          e.target.tagname === "UL" ||
+          e.target.tagName === "LI" ||
+          e.target.tagName === "A"
+        ) {
+          if (e.target.innerHTML.includes("Home")) {
+            console.log("Home");
+            clicked = "Home";
+            if (callback) {
+              callback(clicked);
+            }
+          } else if (e.target.innerHTML.includes("Search")) {
+            console.log("Search");
+            clicked = "Search";
+            if (callback) {
+              callback(clicked);
+            }
+          } else if (e.target.innerHTML.includes("Admin")) {
+            console.log("Admin");
+            clicked = "Admin";
+
+            if (callback) {
+              callback(clicked);
+            }
+          }
+        } else {
+          console.log("you clicked invalid area");
+        }
+      });
+    }
+
+    // header
+    if (this.header !== undefined) {
+      this.header.addEventListener("click", async (e) => {
+        e.preventDefault();
+        console.log("headermenu-this");
+        
+        if (typeof callback === "string") {
+         callback = self[callback];
+         } else if (typeof callback === "function ") {
+         callback.call(self);
+        }
+        
+           if (
+             e.target.tagname === "UL" ||
+             e.target.tagName === "LI" ||
+             e.target.tagName === "A"
+           ) {
+             // console.log('taget' + e.target.tagName)
+             if (e.target.innerHTML.includes("Home")) {
+               console.log("clicked Home");
+               clicked = "Home";
+               if (callback) {
+                 callback(clicked);
+               }
+               
+             } else if (e.target.innerHTML.includes("Search")) {
+               console.log("clicked Search");
+               clicked = "Search";
+               if (callback) {
+                 callback(clicked);
+               }
+               
+             } else if (e.target.innerHTML.includes("Admin")) {
+               console.log("clicked Admin");
+               clicked = "Admin";
+               if (callback) {
+                 callback(clicked);
+               }
+             }
+           } else {
+             console.log("you clicked invalid area");
+           }
+       });
+    }
+  }
+
+  adminMenu(callback, self) {
+    console.log("admin_menu-delegation");
+    let clicked;
+
+    if (typeof callback === "string") {
+      callback = self[callback];
+    } else if(typeof callback === "function"){
+      callback.call(self);
+    }
+    
+    if (this.admin_menu !== undefined) {
+      this.admin_menu.addEventListener("click", (e) => {
+        e.preventDefault();
+      
+        if (e.target.tagName === "A" || e.target.tagName === "I") {
+          if (e.target.innerHTML.includes("Hidden Cafe List")) {
+            console.log("clicked Hidden Cafe List");
+            clicked = "Hidden Cafe List"
+            if (callback) {
+              callback(clicked);
+            }
+          } else if (e.target.innerHTML.includes("Member Management")) {
+            console.log("clicked Member Management");
+            clicked = "Member Management"
+            if (callback) {
+              callback(clicked);
+            }
+          } else if (e.target.innerHTML.includes("Add New Hidden Cafe")) {
+            console.log("clicked Add New Hidden Cafe");
+            clicked = "Add New Hidden Cafe"
+            if (callback) {
+              callback(clicked);
+            }
+          } else if (e.target.innerHTML.includes("Revise Hidden Cafe")) {
+            console.log("clicked Revise Hidden Cafe");
+            clicked = "Revise Hidden Cafe"
+            if (callback) {
+              callback(clicked);
+            }
+          }
+        } else {
+          console.log("you clicked invalid area:" + e.target.tagName);
+        }
+      })
+    }
   }
 
   // main page(home)
-
   makeMainPage(result) {
     this.addScript();
     let user_view = new UserView();
     let common_view = new CommonView();
     let admin_view = new AdminView();
-    let header = admin_view.makeAdminHeader();
+    let header = admin_view.makeAdminHeader(result.user_id, "0");
     let caffeine = user_view.makeMainCaffeineList();
     let cafe = user_view.makeMainCafeList();
     let footer = common_view.makeFooter();
@@ -126,7 +370,7 @@ export class AdminComponent {
     window.document.body.innerHTML = header + caffeine + cafe + footer + pop;
   }
 
-  // admin page
+  // Admin page
 
   makeCafeListPage(result) {
     var result = JSON.parse(result);
@@ -249,11 +493,10 @@ export class AdminComponent {
             var cafe_sns = result.byuser[i].cafe_sns;
             var cafe_information = result.byuser[i].cafe_information;
             // console.log(cafe_id);
-            // if (JSON.stringify(result.cafeImgList[i].cafe_id == cafe_id)) {
-            //   var cafe_image = result.cafeImgList[i].cafe_image;
-            // console.log(result.cafeImgList[i].cafe_image);
-            // }
-
+            if (JSON.stringify(result.cafeImgList[i].cafe_id === cafe_id)) {
+              var cafe_image = result.cafeImgList[i].cafe_image;
+              // console.log(result.cafeImgList[i].cafe_image);
+            }
           }
         }
 
@@ -282,14 +525,14 @@ export class AdminComponent {
     window.document.body.setAttribute("id", "scrollup");
 
     window.document.body.innerHTML = header + search_result + search_pop;
-    // window.addEventListener("load", () => {
-    let dom = document.getElementsByClassName("js-search-result-list")[0];
-    console.log(dom);
-    dom.innerHTML += item;
-    for (let i = 0, max = result.length; i < max; i++) {
-      dom.innerHTML += item(result[i]); //result는 나중에 데이터 받아서 구체적으로 바꿔줘야함
-    }
-    // });
+    window.addEventListener("load", () => {
+      let dom = document.getElementsByClassName("js-search-result-list")[0];
+      console.log(dom);
+      dom.innerHTML += item;
+      for (let i = 0, max = result.length; i < max; i++) {
+        dom.innerHTML += item(result[i]); //result는 나중에 데이터 받아서 구체적으로 바꿔줘야함
+      }
+    });
   }
 
   makeCafeInfoPage(result) {
